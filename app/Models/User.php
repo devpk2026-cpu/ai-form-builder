@@ -51,4 +51,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Form::class);
     }
+
+    public function aiGenerations(): HasMany
+    {
+        return $this->hasMany(AiGeneration::class);
+    }
+
+    public function imports(): HasMany
+    {
+        return $this->hasMany(Import::class);
+    }
 }
