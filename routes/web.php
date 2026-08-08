@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Forms\Index;
+use App\Livewire\Forms\Builder;
 
 Route::view('/', 'welcome');
 
@@ -13,3 +15,16 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 require __DIR__.'/auth.php';
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/forms', Index::class)
+        ->name('forms.index');
+
+    Route::get('/forms/create', Builder::class)
+        ->name('forms.create');
+
+    Route::get('/forms/{form}/edit', Builder::class)
+        ->name('forms.edit');
+
+});
