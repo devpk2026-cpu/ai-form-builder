@@ -11,10 +11,7 @@
             </p>
         </div>
 
-        <a
-            href="{{ route('forms.create') }}"
-            class="px-4 py-2 bg-black text-white rounded-lg"
-        >
+        <a href="{{ route('forms.create') }}" class="px-4 py-2 bg-black text-white rounded-lg">
             + Create Form
         </a>
     </div>
@@ -41,7 +38,6 @@
             <tbody>
 
                 @forelse ($forms as $form)
-
                     <tr class="border-t">
 
                         <td class="p-4">
@@ -68,18 +64,16 @@
 
                         <td class="p-4 text-right space-x-2">
 
-                            <a
-                                href="{{ route('forms.edit', $form) }}"
-                                class="text-blue-600"
-                            >
+                            <a href="{{ route('forms.edit', $form) }}" class="text-blue-600">
                                 Edit
                             </a>
 
-                            <button
-                                wire:click="delete({{ $form->id }})"
-                                wire:confirm="Are you sure you want to delete this form?"
-                                class="text-red-600"
-                            >
+                            <a href="{{ route('forms.submissions.index', $form) }}" class="text-green-600">
+                                Responses
+                            </a>
+
+                            <button wire:click="delete({{ $form->id }})"
+                                wire:confirm="Are you sure you want to delete this form?" class="text-red-600">
                                 Delete
                             </button>
 
@@ -94,7 +88,6 @@
                             No forms created yet.
                         </td>
                     </tr>
-
                 @endforelse
 
             </tbody>

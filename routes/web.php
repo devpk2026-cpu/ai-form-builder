@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Livewire\Forms\Index;
 use App\Livewire\Forms\Builder;
 use App\Livewire\Forms\PublicForm;
+use App\Livewire\Submissions\Index as SubmissionIndex;
+use App\Livewire\Submissions\Show as SubmissionShow;
 
 Route::view('/', 'welcome');
 
@@ -15,7 +17,7 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 Route::middleware('auth')->group(function () {
 
@@ -28,6 +30,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/forms/{form}/edit', Builder::class)
         ->name('forms.edit');
 
+    Route::get('/forms/{form}/submissions', SubmissionIndex::class)
+        ->name('forms.submissions.index');
+
+    Route::get(
+        '/forms/{form}/submissions/{submission}',
+        SubmissionShow::class
+    )->name('forms.submissions.show');
 });
 
 Route::get('/forms/{form:slug}', PublicForm::class)
