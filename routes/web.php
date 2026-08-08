@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Forms\Index;
 use App\Livewire\Forms\Builder;
+use App\Livewire\Forms\PublicForm;
 
 Route::view('/', 'welcome');
 
@@ -28,3 +29,6 @@ Route::middleware('auth')->group(function () {
         ->name('forms.edit');
 
 });
+
+Route::get('/forms/{form:slug}', PublicForm::class)
+    ->name('forms.public');
