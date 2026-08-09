@@ -6,6 +6,8 @@ use App\Livewire\Forms\Builder;
 use App\Livewire\Forms\PublicForm;
 use App\Livewire\Submissions\Index as SubmissionIndex;
 use App\Livewire\Submissions\Show as SubmissionShow;
+use App\Livewire\Imports\Create as ImportCreate;
+use App\Livewire\Imports\Preview as ImportPreview;
 
 Route::view('/', 'welcome');
 
@@ -37,6 +39,12 @@ Route::middleware('auth')->group(function () {
         '/forms/{form}/submissions/{submission}',
         SubmissionShow::class
     )->name('forms.submissions.show');
+
+    Route::get('/imports/create', ImportCreate::class)
+        ->name('imports.create');
+
+    Route::get('/imports/{import}/preview', ImportPreview::class)
+        ->name('imports.preview');
 });
 
 Route::get('/forms/{form:slug}', PublicForm::class)

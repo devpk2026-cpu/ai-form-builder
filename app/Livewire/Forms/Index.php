@@ -24,6 +24,7 @@ class Index extends Component
         return view('livewire.forms.index', [
             'forms' => Auth::user()
                 ->forms()
+                ->withCount('submissions')
                 ->latest()
                 ->paginate(10),
         ])->layout('layouts.app');
