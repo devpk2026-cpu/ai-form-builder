@@ -1,48 +1,78 @@
-FROM dunglas/frankenphp:php8.2-bookworm
+FROM php:8.2-cli
 
-RUN install-php-extensions \
-    gd \
+# System dependencies + Node.js repository
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    zip \
+    curl \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    libonig-dev \
+    libxml2-dev \
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
+
+# PHP extensions
+RUN docker-php-ext-configure gd \
+    --with-freetype \
+    --with-jpeg
+
+RUN docker-php-ext-install \
     pdo_mysql \
     mbstring \
-    xml \
-    zip \
+    exif \
+    pcntl \
     bcmath \
-    intl \
-    exif
+    gd \
+    zip
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /app
+WORKDIR /var/www/html
 
+# Copy composer files first for Docker layer caching
 COPY composer.json composer.lock ./
 
 RUN composer install \
-    --no-dev \
     --optimize-autoloader \
     --no-interaction \
-    --no-progress \
+    --no-dev \
     --no-scripts
 
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install frontend dependencies
+RUN npm install
+
+# Copy complete application
 COPY . .
 
+# Build frontend assets
+RUN npm run build
+
+# Laravel directories
 RUN mkdir -p \
+    storage/framework/cache \
     storage/framework/sessions \
     storage/framework/views \
-    storage/framework/cache \
     storage/logs \
     bootstrap/cache
 
+# Permissions
 RUN chmod -R 775 storage bootstrap/cache
 
+# Laravel package discovery
 RUN php artisan package:discover --ansi
 
-RUN npm install
-RUN npm run build
+# Railway provides PORT
+EXPOSE 8080
 
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
+CMD php artisan migrate --force && \
+    php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
 
-EXPOSE 10000
-
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
