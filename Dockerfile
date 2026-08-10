@@ -1,6 +1,6 @@
 FROM php:8.2-cli
 
-# System dependencies + Node.js repository
+# System dependencies + Node.js
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -16,11 +16,12 @@ RUN apt-get update && apt-get install -y \
     npm \
     && rm -rf /var/lib/apt/lists/*
 
-# PHP extensions
+# PHP GD configuration
 RUN docker-php-ext-configure gd \
     --with-freetype \
     --with-jpeg
 
+# PHP extensions
 RUN docker-php-ext-install \
     pdo_mysql \
     mbstring \
@@ -35,7 +36,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy composer files first for Docker layer caching
+# Composer dependencies
 COPY composer.json composer.lock ./
 
 RUN composer install \
@@ -44,16 +45,15 @@ RUN composer install \
     --no-dev \
     --no-scripts
 
-# Copy package files
+# Node dependencies
 COPY package.json package-lock.json* ./
 
-# Install frontend dependencies
 RUN npm install
 
-# Copy complete application
+# Copy application
 COPY . .
 
-# Build frontend assets
+# Build frontend
 RUN npm run build
 
 # Laravel directories
@@ -70,9 +70,11 @@ RUN chmod -R 775 storage bootstrap/cache
 # Laravel package discovery
 RUN php artisan package:discover --ansi
 
-# Railway provides PORT
 EXPOSE 8080
 
+# Run migrations and start Laravel
 CMD php artisan migrate --force && \
+    php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
-
