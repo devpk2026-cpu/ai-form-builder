@@ -8,7 +8,7 @@ A Laravel + Livewire based form builder that allows users to create structured f
 
 ## Live Demo
 
-**Live URL:** `TODO: ADD DEPLOYED URL`
+**Live URL:** `https://ai-form-builder-n23l.onrender.com/`
 
 **Demo Email:** `demo@example.com`
 
